@@ -34,6 +34,7 @@ enum class BinaryOperation(val str: String) {
 
 // Term construction
 fun term(t: Any?): Term = if (t == null) Term.None else when (t) {
+    is Term -> t
     is Int -> Term.Int(t)
     is String -> Term.String(t)
     is Boolean -> Term.Boolean(t)

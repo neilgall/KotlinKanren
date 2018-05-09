@@ -47,7 +47,7 @@ class PlaygroundTests : StringSpec({
     }
 
     "can find list members" {
-        run { a -> membero(a, term(1, 2, 3 ,4 ,5)) } shouldEqual listOf(listOf(1), listOf(2), listOf(3), listOf(4), listOf(5))
+        run { a -> membero(a, term(1, 2, 3, 4, 5)) } shouldEqual listOf(listOf(1), listOf(2), listOf(3), listOf(4), listOf(5))
     }
 
     "can remove list members" {
@@ -61,20 +61,20 @@ class PlaygroundTests : StringSpec({
     }
 
     "can deal with relations" {
-        val parent = relation(
-                arrayOf("Homer", "Bart"),
-                arrayOf("Homer", "Lisa"),
-                arrayOf("Homer", "Maggie"),
-                arrayOf("Marge", "Bart"),
-                arrayOf("Marge", "Lisa"),
-                arrayOf("Marge", "Maggie"),
-                arrayOf("Abe", "Homer")
+        val parent = relation2(
+                "Homer", "Bart",
+                "Homer", "Lisa",
+                "Homer", "Maggie",
+                "Marge", "Bart",
+                "Marge", "Lisa",
+                "Marge", "Maggie",
+                "Abe", "Homer"
         )
 
-        fun grandparent(a: Term, b: Term): Goal = fresh { c -> parent(arrayOf(a, c)) _and_ parent(arrayOf(c, b)) }
+        fun grandparent(a: Term, b: Term): Goal = fresh { c -> parent(a, c) _and_ parent(c, b) }
 
-        run { a -> parent(arrayOf(a, term("Bart"))) } shouldEqual listOf(listOf("Homer"), listOf("Marge"))
-        run { a -> parent(arrayOf(term("Homer"), a)) } shouldEqual listOf(listOf("Bart"), listOf("Lisa"), listOf("Maggie"))
+        run { a -> parent(a, "Bart") } shouldEqual listOf(listOf("Homer"), listOf("Marge"))
+        run { a -> parent("Homer", a) } shouldEqual listOf(listOf("Bart"), listOf("Lisa"), listOf("Maggie"))
         run { a -> grandparent(a, term("Bart")) } shouldEqual listOf(listOf("Abe"))
     }
 })
