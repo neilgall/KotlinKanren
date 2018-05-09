@@ -12,13 +12,13 @@ infix fun <A, B> Term._is_(rhs: Pair<A, B>) = this _is_ term(rhs)
 infix fun <T> Term._is_(rhs: List<T>) = this _is_ term(rhs)
 
 fun conj_(gs: List<Goal>): Goal = when {
-    gs.isEmpty() -> { state -> sequenceOf() }
+    gs.isEmpty() -> { _ -> sequenceOf() }
     gs.size == 1 -> gs.first()
     else -> { state -> gs.fold(sequenceOf(state), { states, goal -> states.flatMap(zzz(goal)) }) }
 }
 
 fun disj_(gs: List<Goal>): Goal = when {
-    gs.isEmpty() -> { state -> sequenceOf() }
+    gs.isEmpty() -> { _ -> sequenceOf() }
     gs.size == 1 -> gs.first()
     else -> { state -> gs.fold(sequenceOf(), { states, goal -> states + zzz(goal)(state) }) }
 }
@@ -76,35 +76,35 @@ fun take(n: Int? = null, goal: Goal): List<State> {
     return if (n === null) states.toList() else states.take(n).toList()
 }
 
-fun run(n: Int? = null, goals: List<Goal>): KanrenResult =
-        take(n, conj_(goals)).map(::reifyMatching)
+fun runGoal(n: Int? = null, goal: Goal): KanrenResult =
+        take(n, goal).map(::reifyMatching)
 
-fun run(n: Int? = null, goals: (Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a -> conj_(goals(a)) }).map(reify(1))
+fun run(n: Int? = null, goal: (Term) -> Goal): KanrenResult =
+        take(n, fresh { a -> goal(a) }).map(reify(1))
 
-fun run(n: Int? = null, goals: (Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b -> conj_(goals(a, b)) }).map(reify(2))
+fun run(n: Int? = null, goal: (Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b -> goal(a, b) }).map(reify(2))
 
-fun run(n: Int? = null, goals: (Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c -> conj_(goals(a, b, c)) }).map(reify(3))
+fun run(n: Int? = null, goal: (Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c -> goal(a, b, c) }).map(reify(3))
 
-fun run(n: Int? = null, goals: (Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d -> conj_(goals(a, b, c, d)) }).map(reify(4))
+fun run(n: Int? = null, goal: (Term, Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c, d -> goal(a, b, c, d) }).map(reify(4))
 
-fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d, e -> conj_(goals(a, b, c, d, e)) }).map(reify(5))
+fun run(n: Int? = null, goal: (Term, Term, Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c, d, e -> goal(a, b, c, d, e) }).map(reify(5))
 
-fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d, e, f -> conj_(goals(a, b, c, d, e, f)) }).map(reify(6))
+fun run(n: Int? = null, goal: (Term, Term, Term, Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f -> goal(a, b, c, d, e, f) }).map(reify(6))
 
-fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d, e, f, g -> conj_(goals(a, b, c, d, e, f, g)) }).map(reify(7))
+fun run(n: Int? = null, goal: (Term, Term, Term, Term, Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g -> goal(a, b, c, d, e, f, g) }).map(reify(7))
 
-fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d, e, f, g, h -> conj_(goals(a, b, c, d, e, f, g, h)) }).map(reify(8))
+fun run(n: Int? = null, goal: (Term, Term, Term, Term, Term, Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g, h -> goal(a, b, c, d, e, f, g, h) }).map(reify(8))
 
-fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d, e, f, g, h, i -> conj_(goals(a, b, c, d, e, f, g, h, i)) }).map(reify(9))
+fun run(n: Int? = null, goal: (Term, Term, Term, Term, Term, Term, Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g, h, i -> goal(a, b, c, d, e, f, g, h, i) }).map(reify(9))
 
-fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d, e, f, g, h, i, j -> conj_(goals(a, b, c, d, e, f, g, h, i, j)) }).map(reify(10))
+fun run(n: Int? = null, goal: (Term, Term, Term, Term, Term, Term, Term, Term, Term, Term) -> Goal): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g, h, i, j -> goal(a, b, c, d, e, f, g, h, i, j) }).map(reify(10))

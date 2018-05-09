@@ -6,33 +6,37 @@ import io.kotlintest.specs.StringSpec
 class PlaygroundTests : StringSpec({
 
     "can debug" {
-        run { a -> listOf(trace("a is 3")(a _is_ 3)) }.first() shouldEqual listOf(3)
+        run { a -> trace("a is 3")(a _is_ 3) }.first() shouldEqual listOf(3)
     }
 
     "can evaluate simple arithmetic" {
-        run { a -> listOf(a + 5 _is_ 9) }.first() shouldEqual listOf(4)
+        run { a -> a + 5 _is_ 9 }.first() shouldEqual listOf(4)
     }
 
     "can do indeterminate boolean logic" {
-        run { a -> listOf(a _and_ false _is_ false) } shouldEqual listOf(listOf(false), listOf(true))
+        run { a -> a _and_ false _is_ false } shouldEqual listOf(listOf(false), listOf(true))
     }
 
     "can generate infinite streams" {
-        fun fives(t: Term): Goal = fresh { a -> a _is_ 5 } _or_ fresh(::fives)
+        fun fives(t: Term): Goal = t _is_ 5 _or_ fresh(::fives)
+        fun sixes(t: Term): Goal = t _is_ 6 _or_ fresh(::sixes)
 
-        run(10, listOf(fresh(::fives))) shouldEqual listOf(listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5))
+        runGoal(10, fresh(::fives)) shouldEqual listOf(listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5), listOf(5))
+
+        // TODO: won't work until search strategy is fixed
+        runGoal(10, fresh(::fives) _or_ fresh(::sixes)) shouldEqual listOf(listOf(5), listOf(6), listOf(5), listOf(6), listOf(5), listOf(6), listOf(5), listOf(6), listOf(5), listOf(6))
     }
 
     "can unify lists" {
-        run { a -> listOf(a _is_ listOf(1, 2, 3)) }.first() shouldEqual listOf(listOf(1, 2, 3))
+        run { a -> a _is_ listOf(1, 2, 3) }.first() shouldEqual listOf(listOf(1, 2, 3))
     }
 
     "can perform list appends" {
-        run { a -> listOf(appendo(a, term(4, 5), term(1, 2, 3, 4, 5))) }.first() shouldEqual listOf(listOf(1, 2, 3))
+        run { a -> appendo(a, term(4, 5), term(1, 2, 3, 4, 5)) }.first() shouldEqual listOf(listOf(1, 2, 3))
     }
 
     "can perform indeterminate list appends" {
-        run { a, b -> listOf(appendo(a, b, term(1, 2, 3, 4, 5))) } shouldEqual listOf(
+        run { a, b -> appendo(a, b, term(1, 2, 3, 4, 5)) } shouldEqual listOf(
                 listOf(null, listOf(1, 2, 3, 4, 5)),
                 listOf(listOf(1), listOf(2, 3, 4, 5)),
                 listOf(listOf(1, 2), listOf(3, 4, 5)),
@@ -43,11 +47,11 @@ class PlaygroundTests : StringSpec({
     }
 
     "can find list members" {
-        run { a -> listOf(membero(a, term(1, 2, 3 ,4 ,5))) } shouldEqual listOf(listOf(1), listOf(2), listOf(3), listOf(4), listOf(5))
+        run { a -> membero(a, term(1, 2, 3 ,4 ,5)) } shouldEqual listOf(listOf(1), listOf(2), listOf(3), listOf(4), listOf(5))
     }
 
     "can remove list members" {
-        run { a, b -> listOf(removeo(a, b, term(1, 2, 3, 4, 5))) } shouldEqual listOf(
+        run { a, b -> removeo(a, b, term(1, 2, 3, 4, 5)) } shouldEqual listOf(
                 listOf(1, listOf(2, 3, 4, 5)),
                 listOf(2, listOf(1, 3, 4, 5)),
                 listOf(3, listOf(1, 2, 4, 5)),
@@ -69,8 +73,8 @@ class PlaygroundTests : StringSpec({
 
         fun grandparent(a: Term, b: Term): Goal = fresh { c -> parent(arrayOf(a, c)) _and_ parent(arrayOf(c, b)) }
 
-        run { a -> listOf(parent(arrayOf(a, term("Bart")))) } shouldEqual listOf(listOf("Homer"), listOf("Marge"))
-        run { a -> listOf(parent(arrayOf(term("Homer"), a))) } shouldEqual listOf(listOf("Bart"), listOf("Lisa"), listOf("Maggie"))
-        run { a -> listOf(grandparent(a, term("Bart"))) } shouldEqual listOf(listOf("Abe"))
+        run { a -> parent(arrayOf(a, term("Bart"))) } shouldEqual listOf(listOf("Homer"), listOf("Marge"))
+        run { a -> parent(arrayOf(term("Homer"), a)) } shouldEqual listOf(listOf("Bart"), listOf("Lisa"), listOf("Maggie"))
+        run { a -> grandparent(a, term("Bart")) } shouldEqual listOf(listOf("Abe"))
     }
 })
