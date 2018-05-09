@@ -24,3 +24,12 @@ fun lengtho(length: Term, xs: Term): Goal =
                             length _is_ tailLength + 1
                     )
                 }
+
+fun removeo(x: Term, xs: Term, ys: Term): Goal =
+        fresh { p, q, r ->
+            conj(
+                    q _is_ Term.Pair(x, r),
+                    appendo(p, q, ys),
+                    appendo(p, r, xs)
+            )
+        }

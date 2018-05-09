@@ -46,6 +46,16 @@ class PlaygroundTests : StringSpec({
         run { a -> listOf(membero(a, term(1, 2, 3 ,4 ,5))) } shouldEqual listOf(listOf(1), listOf(2), listOf(3), listOf(4), listOf(5))
     }
 
+    "can remove list members" {
+        run { a, b -> listOf(removeo(a, b, term(1, 2, 3, 4, 5))) } shouldEqual listOf(
+                listOf(1, listOf(2, 3, 4, 5)),
+                listOf(2, listOf(1, 3, 4, 5)),
+                listOf(3, listOf(1, 2, 4, 5)),
+                listOf(4, listOf(1, 2, 3, 5)),
+                listOf(5, listOf(1, 2, 3, 4))
+        )
+    }
+
     "can deal with relations" {
         val parent = relation(
                 arrayOf("Homer", "Bart"),

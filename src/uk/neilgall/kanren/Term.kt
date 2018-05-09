@@ -33,7 +33,7 @@ enum class BinaryOperation(val str: String) {
 }
 
 // Term construction
-fun term(t: Any?): Term = if (t == null) Term.None else when(t) {
+fun term(t: Any?): Term = if (t == null) Term.None else when (t) {
     is Int -> Term.Int(t)
     is String -> Term.String(t)
     is Boolean -> Term.Boolean(t)
@@ -80,14 +80,17 @@ infix fun Term._or_(rhs: Boolean): Term = this _or_ term(rhs)
 infix fun Boolean._and_(rhs: Term): Term = term(this) _and_ rhs
 infix fun Boolean._or_(rhs: Term): Term = term(this) _or_ rhs
 
-fun Term.toMatch(): Any? = when(this) {
+fun Term.toMatch(): Any? = when (this) {
     is Term.String -> s
     is Term.Int -> i
     is Term.Boolean -> b
-    is Term.Pair -> when (q) {
-        is Term.None -> listOf(p.toMatch())
-        is Term.Pair -> listOf(p.toMatch()) + (q.toMatch() as List<Any?>)
-        else -> Pair(p.toMatch(), q.toMatch())
+    is Term.Pair -> {
+        val pm = p.toMatch()
+        val qm = q.toMatch()
+        if (qm == null) listOf(pm) else when (qm) {
+            is List<*> -> listOf(pm) + qm
+            else -> Pair(pm, qm)
+        }
     }
     else -> null
 }
