@@ -8,8 +8,8 @@ infix fun Term._is_not_(rhs: Term): Goal = { state -> state.disunify(this, rhs) 
 infix fun Term._is_(rhs: Int): Goal = this _is_ Term.Int(rhs)
 infix fun Term._is_(rhs: String): Goal = this _is_ Term.String(rhs)
 infix fun Term._is_(rhs: Boolean): Goal = this _is_ Term.Boolean(rhs)
-infix fun <A, B> Term._is_(rhs: Pair<A, B>) = this _is_ rhs.toTerm()
-infix fun <T> Term._is_(rhs: List<T>) = this _is_ rhs.toTerm()
+infix fun <A, B> Term._is_(rhs: Pair<A, B>) = this _is_ term(rhs)
+infix fun <T> Term._is_(rhs: List<T>) = this _is_ term(rhs)
 
 fun conj_(gs: List<Goal>): Goal = when {
     gs.isEmpty() -> { state -> sequenceOf() }

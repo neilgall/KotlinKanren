@@ -32,14 +32,18 @@ enum class BinaryOperation(val str: String) {
     override fun toString(): String = str
 }
 
-fun Any.toTerm(): Term = when(this) {
-    is Int -> Term.Int(this)
-    is String -> Term.String(this)
-    is Boolean -> Term.Boolean(this)
-    is Pair<*, *> -> Term.Pair(first!!.toTerm(), second!!.toTerm())
-    is List<*> -> this.map { it!!.toTerm() }.foldRight(Term.None, Term::Pair)
+// Term construction
+fun term(t: Any?): Term = if (t == null) Term.None else when(t) {
+    is Int -> Term.Int(t)
+    is String -> Term.String(t)
+    is Boolean -> Term.Boolean(t)
+    is Pair<*, *> -> Term.Pair(term(t.first), term(t.second))
+    is List<*> -> t.map(::term).foldRight(Term.None, Term::Pair)
     else -> throw IllegalArgumentException()
 }
+
+// Lists using vararg
+fun term(vararg t: Any?): Term = t.map(::term).foldRight(Term.None, Term::Pair)
 
 // General operations
 operator fun Term.plus(rhs: Term): Term = Term.BinaryExpr(this, BinaryOperation.PLUS, rhs)
@@ -50,31 +54,31 @@ operator fun Term.div(rhs: Term): Term = Term.BinaryExpr(this, BinaryOperation.D
 operator fun Term.rem(rhs: Term): Term = Term.BinaryExpr(this, BinaryOperation.MOD, rhs)
 
 // String operations
-operator fun Term.plus(rhs: String): Term = this + rhs.toTerm()
+operator fun Term.plus(rhs: String): Term = this + term(rhs)
 
-operator fun String.plus(rhs: Term): Term = toTerm() + rhs
+operator fun String.plus(rhs: Term): Term = term(this) + rhs
 
 // Integer arithmetic
-operator fun Term.plus(rhs: Int): Term = this + rhs.toTerm()
+operator fun Term.plus(rhs: Int): Term = this + term(rhs)
 
-operator fun Term.minus(rhs: Int): Term = this - rhs.toTerm()
-operator fun Term.times(rhs: Int): Term = this * rhs.toTerm()
-operator fun Term.div(rhs: Int): Term = this / rhs.toTerm()
-operator fun Term.rem(rhs: Int): Term = this % rhs.toTerm()
-operator fun Int.plus(rhs: Term): Term = toTerm() + rhs
-operator fun Int.minus(rhs: Term): Term = toTerm() - rhs
-operator fun Int.times(rhs: Term): Term = toTerm() * rhs
-operator fun Int.div(rhs: Term): Term = toTerm() / rhs
-operator fun Int.rem(rhs: Term): Term = toTerm() % rhs
+operator fun Term.minus(rhs: Int): Term = this - term(rhs)
+operator fun Term.times(rhs: Int): Term = this * term(rhs)
+operator fun Term.div(rhs: Int): Term = this / term(rhs)
+operator fun Term.rem(rhs: Int): Term = this % term(rhs)
+operator fun Int.plus(rhs: Term): Term = term(this) + rhs
+operator fun Int.minus(rhs: Term): Term = term(this) - rhs
+operator fun Int.times(rhs: Term): Term = term(this) * rhs
+operator fun Int.div(rhs: Term): Term = term(this) / rhs
+operator fun Int.rem(rhs: Term): Term = term(this) % rhs
 
 // Boolean operations
 infix fun Term._and_(rhs: Term): Term = Term.BinaryExpr(this, BinaryOperation.AND, rhs)
 
 infix fun Term._or_(rhs: Term): Term = Term.BinaryExpr(this, BinaryOperation.OR, rhs)
-infix fun Term._and_(rhs: Boolean): Term = this _and_ rhs.toTerm()
-infix fun Term._or_(rhs: Boolean): Term = this _or_ rhs.toTerm()
-infix fun Boolean._and_(rhs: Term): Term = toTerm() _and_ rhs
-infix fun Boolean._or_(rhs: Term): Term = toTerm() _or_ rhs
+infix fun Term._and_(rhs: Boolean): Term = this _and_ term(rhs)
+infix fun Term._or_(rhs: Boolean): Term = this _or_ term(rhs)
+infix fun Boolean._and_(rhs: Term): Term = term(this) _and_ rhs
+infix fun Boolean._or_(rhs: Term): Term = term(this) _or_ rhs
 
 fun Term.toMatch(): Any? = when(this) {
     is Term.String -> s
