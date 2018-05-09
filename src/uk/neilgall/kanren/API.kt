@@ -33,36 +33,31 @@ fun fresh(f: (Term) -> Goal): Goal = { state -> state.withNewVar(f) }
 
 // Convenience functions for introducing multiple variables at once
 fun fresh(f: (Term, Term) -> Goal): Goal =
-        fresh { a ->
-            fresh { b -> f(a, b) }
-        }
+        fresh { a -> fresh { b -> f(a, b) } }
 
 fun fresh(f: (Term, Term, Term) -> Goal): Goal =
-        fresh { a ->
-            fresh { b ->
-                fresh { c -> f(a, b, c) }
-            }
-        }
+        fresh { a -> fresh { b -> fresh { c -> f(a, b, c) } } }
 
 fun fresh(f: (Term, Term, Term, Term) -> Goal): Goal =
-        fresh { a ->
-            fresh { b ->
-                fresh { c ->
-                    fresh { d -> f(a, b, c, d) }
-                }
-            }
-        }
+        fresh { a -> fresh { b -> fresh { c -> fresh { d -> f(a, b, c, d) } } } }
 
 fun fresh(f: (Term, Term, Term, Term, Term) -> Goal): Goal =
-        fresh { a ->
-            fresh { b ->
-                fresh { c ->
-                    fresh { d ->
-                        fresh { e -> f(a, b, c, d, e) }
-                    }
-                }
-            }
-        }
+        fresh { a -> fresh { b -> fresh { c -> fresh { d -> fresh { e -> f(a, b, c, d, e) } } } } }
+
+fun fresh(f: (Term, Term, Term, Term, Term, Term) -> Goal): Goal =
+        fresh { a -> fresh { b -> fresh { c -> fresh { d -> fresh { e -> fresh { f -> f(a, b, c, d, e, f) } } } } } }
+
+fun fresh(f: (Term, Term, Term, Term, Term, Term, Term) -> Goal): Goal =
+        fresh { a -> fresh { b -> fresh { c -> fresh { d -> fresh { e -> fresh { f -> fresh { g -> f(a, b, c, d, e, f, g) } } } } } } }
+
+fun fresh(f: (Term, Term, Term, Term, Term, Term, Term, Term) -> Goal): Goal =
+        fresh { a -> fresh { b -> fresh { c -> fresh { d -> fresh { e -> fresh { f -> fresh { g -> fresh { h -> f(a, b, c, d, e, f, g, h) } } } } } } } }
+
+fun fresh(f: (Term, Term, Term, Term, Term, Term, Term, Term, Term) -> Goal): Goal =
+        fresh { a -> fresh { b -> fresh { c -> fresh { d -> fresh { e -> fresh { f -> fresh { g -> fresh { h -> fresh { i -> f(a, b, c, d, e, f, g, h, i) } } } } } } } } }
+
+fun fresh(f: (Term, Term, Term, Term, Term, Term, Term, Term, Term, Term) -> Goal): Goal =
+        fresh { a -> fresh { b -> fresh { c -> fresh { d -> fresh { e -> fresh { f -> fresh { g -> fresh { h -> fresh { i -> fresh { j -> f(a, b, c, d, e, f, g, h, i, j) } } } } } } } } } }
 
 typealias Match = List<Any?>
 typealias KanrenResult = List<Match>
@@ -97,4 +92,19 @@ fun run(n: Int? = null, goals: (Term, Term, Term, Term) -> List<Goal>): KanrenRe
         take(n, fresh { a, b, c, d -> conj_(goals(a, b, c, d)) }).map(reify(4))
 
 fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
-        take(n, fresh { a, b, c, d, e  -> conj_(goals(a, b, c, d, e)) }).map(reify(5))
+        take(n, fresh { a, b, c, d, e -> conj_(goals(a, b, c, d, e)) }).map(reify(5))
+
+fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f -> conj_(goals(a, b, c, d, e, f)) }).map(reify(6))
+
+fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g -> conj_(goals(a, b, c, d, e, f, g)) }).map(reify(7))
+
+fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g, h -> conj_(goals(a, b, c, d, e, f, g, h)) }).map(reify(8))
+
+fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g, h, i -> conj_(goals(a, b, c, d, e, f, g, h, i)) }).map(reify(9))
+
+fun run(n: Int? = null, goals: (Term, Term, Term, Term, Term, Term, Term, Term, Term, Term) -> List<Goal>): KanrenResult =
+        take(n, fresh { a, b, c, d, e, f, g, h, i, j -> conj_(goals(a, b, c, d, e, f, g, h, i, j)) }).map(reify(10))
