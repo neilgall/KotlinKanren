@@ -1,6 +1,6 @@
 package uk.neilgall.kanren
 
-import io.kotlintest.matchers.shouldEqual
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class ComplexExample : StringSpec({
@@ -21,6 +21,6 @@ class ComplexExample : StringSpec({
                         g + t _is_ d
                 )
             }
-        }.first() shouldEqual listOf(4, 0, 1, 2, 5, 3, 6)
+        }.first() shouldBe listOf(4, 0, 1, 2, 5, 3, 6)
     }
 })
