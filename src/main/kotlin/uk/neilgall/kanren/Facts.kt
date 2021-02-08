@@ -2,7 +2,7 @@ package uk.neilgall.kanren
 
 private fun unify(facts: List<List<Term>>, props: List<Any?>): Goal {
     val propTerms = props.map(::term)
-    return conj_(facts.map { conj_(it.zip(propTerms).map { it.first _is_ it.second }) })
+    return disj_(facts.map { f -> conj_(f.zip(propTerms).map { (a, b) -> a _is_ b }) })
 }
 
 fun relation2(vararg data: Any?): (Any?, Any?) -> Goal {
