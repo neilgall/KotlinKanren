@@ -5,6 +5,17 @@ import io.kotlintest.specs.StringSpec
 
 class PlaygroundTests : StringSpec({
 
+    "transitive unification from README" {
+        run { a,b,c -> (a _is_ b) _and_ (b _is_ c) _and_ (c _is_ 5) }.first() shouldBe listOf(5, 5, 5)
+    }
+
+    "transitive unification with multiple results from README" {
+        run { a,b,c -> ((a _is_ b) _or_ (a _is_ c)) _and_ (b _is_ 8) _and_ (c _is_ 3) } shouldBe listOf(
+            listOf(8, 8, 3),
+            listOf(3, 8, 3)
+        )
+    }
+
     "can debug" {
         run { a -> trace("a is 3")(a _is_ 3) }.first() shouldBe listOf(3)
     }
